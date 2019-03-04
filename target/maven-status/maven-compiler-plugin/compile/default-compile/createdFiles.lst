@@ -1,0 +1,3 @@
+com\springbootjpa\repository\AmazonClient.class
+com\springbootjpa\SpringBootJPAApplication.class
+com\springbootjpa\controller\JpaController.class
