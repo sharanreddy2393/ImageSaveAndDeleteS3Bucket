@@ -19,6 +19,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.springbootjpa.model.User;
 
 @Service
 public class AmazonClient {
@@ -69,8 +70,10 @@ public class AmazonClient {
 	    	String endpointUrl = "https://s3.amazonaws.com";
 	        File file = convertMultiPartToFile(multipartFile);
 	        String fileName = generateFileName(multipartFile);
-	        fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-	        uploadFileTos3bucket(fileName, file);
+	        User user = new User();
+			user.setEmail("sharan2312@gmail.com");
+	        fileUrl = endpointUrl + "/" + bucketName + "/" + generateFolderName(user).replace("@", "%40") +file.getName();
+	        uploadFileTos3bucket(fileName, file,user);
 	        file.delete();
 	    } catch (Exception e) {
 	       e.printStackTrace();
@@ -94,8 +97,12 @@ public class AmazonClient {
 	    return new Date().getTime() + "-" + multiPart.getOriginalFilename().replace(" ", "_");
 	}
 	
-	private void uploadFileTos3bucket(String fileName, File file) {
-	    s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
+	private String generateFolderName(User  user) {
+	    return user.getEmail() +"/";
+	}
+	private void uploadFileTos3bucket(String fileName, File file,User user) {
+		String folderName = generateFolderName(user);
+	    s3client.putObject(new PutObjectRequest(bucketName, folderName+ file.getName(), file)
 	            .withCannedAcl(CannedAccessControlList.PublicRead));
 	}
 }
